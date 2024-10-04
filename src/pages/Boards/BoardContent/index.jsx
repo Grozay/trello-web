@@ -11,7 +11,7 @@ const BoardContent = () => {
     }}>
       Board Content
     </Box>
-  );
-};
+  )
+}
 
 export default BoardContent
