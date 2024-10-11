@@ -9,13 +9,14 @@ import AvatarGroup from '@mui/material/AvatarGroup'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
+
 const MENU_STYLE ={
-  color: 'primary.main',
-  backgroundColor: 'white',
+  color: 'white',
+  backgroundColor: 'transparent',
   borderRadius: '4px',
   border: 'none',
-  '& .MuiSvgIcon-root': {
-    color: 'primary.main'
+  '.MuiSvgIcon-root': {
+    color: 'white'
   },
   '&:hover': {
     backgroundColor: 'primary.50'
@@ -32,8 +33,9 @@ const BoardBar = () => {
       justifyContent: 'space-between',
       gap: 2,
       overflowX: 'auto',
-      borderTop: '1px solid #00bfa5',
-      paddingX: 2
+      borderBottom: '1px solid white',
+      paddingX: 2,
+      backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#24495e' : '#1976d2'
     }}>
 
       <Box sx={{
@@ -79,13 +81,25 @@ const BoardBar = () => {
         gap: 2
       }}>
 
-        <Button variant="outlined" startIcon={<PersonAddIcon />}>Invite</Button>
+        <Button
+          variant="outlined"
+          startIcon={<PersonAddIcon />}
+          sx={{
+            color: 'white',
+            borderColor: 'white',
+            '&:hover': {
+              borderColor: 'white'
+            }
+          }}
+        >Invite</Button>
 
         <AvatarGroup sx={{
+          gap: '10px',
           '& .MuiAvatar-root': {
             width: 34,
             height: 34,
-            fontSize: 16
+            fontSize: 16,
+            border: 'none'
           }
         }} max={6}>
           <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
