@@ -35,7 +35,8 @@ const BoardBar = () => {
       overflowX: 'auto',
       borderBottom: '1px solid white',
       paddingX: 2,
-      backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#24495e' : '#1976d2'
+      backgroundColor: (theme) => theme.palette.mode === 'dark' ? '#24495e' : '#1976d2',
+      '&::-webkit-scrollbar-track': { m: 1 }
     }}>
 
       <Box sx={{
@@ -99,11 +100,21 @@ const BoardBar = () => {
             width: 34,
             height: 34,
             fontSize: 16,
-            border: 'none'
+            border: 'none',
+            color: 'white',
+            cursor: 'pointer',
+            '&:first-of-type': {
+              backgroundColor: '#a4b0be',
+            }
           }
         }} max={6}>
-          <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-          <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
+          <Avatar alt="Remy Sharp" src="https://avatars.githubusercontent.com/u/10354250?v=4" />
+          <Avatar alt="Travis Howard" src="https://avatars.githubusercontent.com/u/10354250?v=4" />
+          <Avatar alt="Cindy Baker" src="https://avatars.githubusercontent.com/u/10354250?v=4" />
+          <Avatar alt="Cindy Baker" src="https://avatars.githubusercontent.com/u/10354250?v=4" />
+          <Avatar alt="Cindy Baker" src="https://avatars.githubusercontent.com/u/10354250?v=4" />
+          <Avatar alt="Cindy Baker" src="https://avatars.githubusercontent.com/u/10354250?v=4" />
+          <Avatar alt="Cindy Baker" src="https://avatars.githubusercontent.com/u/10354250?v=4" />
           <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
           <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
           <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
