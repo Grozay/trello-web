@@ -8,6 +8,5 @@ import { API_ROOT } from '~/utils/constants'
 export const fetchBoardDetailsAPI = async (boardId) => {
   const response = await axios.get(`${API_ROOT}/v1/boards/${boardId}`)
   // axios trả về là 1 object có 2 thuộc tính: data và status
-  console.log(response.data)
   return response.data
 }
