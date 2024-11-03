@@ -36,8 +36,8 @@ const Column = ({ column }) => {
     //https://github.com/clauderic/dnd-kit/issues/117
     transform: CSS.Translate.toString(transform),
     transition,
-    //chiều cao pahi luôn max 100% vì nếu ko sẽ lỗi lúc kéo column ngắn 
-    //cua một column dìa thì phải kéo ở khu vục giữa rất khó chịu. 
+    //chiều cao pahi luôn max 100% vì nếu ko sẽ lỗi lúc kéo column ngắn
+    //cua một column dìa thì phải kéo ở khu vục giữa rất khó chịu.
     //lưu ý lúc này phải kết hợp với (...listennes) nằm ở Box chứ không phải ở div ngoài cùng để tránh cùng để tránh trường hợp kéo vào vùng xanh
     height: '100%',
     opacity: isDragging ? 0.5 : undefined
@@ -50,7 +50,7 @@ const Column = ({ column }) => {
 
   const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id')
 
-  //phải bọc div ở đây vì vấn đề chiều cao của column khi kéo thả sẽ có bug kiểu kiểu flickering 
+  //phải bọc div ở đây vì vấn đề chiều cao của column khi kéo thả sẽ có bug kiểu kiểu flickering
 
   const [openNewCardForm, setOpenNewCardForm] = useState(false)
   const toggleNewCardForm = () => setOpenNewCardForm(!openNewCardForm)
@@ -187,6 +187,7 @@ const Column = ({ column }) => {
                 size='small'
                 variant='outlined'
                 autoFocus
+                data-no-dnd='true'
                 value={newCardTitle}
                 onChange={(e) => setNewCardTitle(e.target.value)}
                 sx={{
@@ -224,7 +225,6 @@ const Column = ({ column }) => {
             </Box>
           }
         </Box>
-
       </Box>
     </div>
   )
