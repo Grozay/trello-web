@@ -10,3 +10,15 @@ export const fetchBoardDetailsAPI = async (boardId) => {
   // axios trả về là 1 object có 2 thuộc tính: data và status
   return response.data
 }
+
+//column
+export const createNewColumnAPI = async (newColumnData) => {
+  const response = await axios.post(`${API_ROOT}/v1/columns`, newColumnData)
+  return response.data
+}
+
+//card
+export const createNewCardAPI = async (newCardData) => {
+  const response = await axios.post(`${API_ROOT}/v1/cards`, newCardData)
+  return response.data
+}
