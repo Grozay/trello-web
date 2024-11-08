@@ -8,20 +8,29 @@ import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
 
-const ListColumns = ({ columns }) => {
+const ListColumns = ({ columns, createNewColumn, createNewCard }) => {
 
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
   const toggleNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm)
 
   const [newColumnTitle, setNewColumnTitle] = useState('')
 
-  const addNewColumn = () => {
+  const addNewColumn = async () => {
     if (!newColumnTitle) {
       toast.error('Please enter column title', { position: 'bottom-right' })
       return
     }
-    // console.log('newColumnTitle', newColumnTitle)
-    //gọi api ở đây
+
+    //Tạo dữ liệu để gọi api
+    const newColumnData = {
+      title: newColumnTitle
+    }
+
+    // Gọi lên prop func createNewColumn nằm ở component cha cao nhất (Board.jsx, _id.jsx)
+    //có thể dùng redux để lưu trữ các cột vào state global
+    //Thì lúc naỳ chúng ta có thể gọi luôn API ở đây là xong thay vì phải lần lượt gọi ngược lên những component cha phía trên 
+    //Với việc sử dụng redux thì code sẽ clean hơn chuẩn chỉnh hơn rất là nhiều
+    await createNewColumn(newColumnData)
 
     toggleNewColumnForm()
     setNewColumnTitle('')
@@ -42,7 +51,7 @@ const ListColumns = ({ columns }) => {
         '&::-webkit-scrollbar-track': { m: 2 }
       }}>
         {/* Box column */}
-        {columns?.map(column => <Column key={column?._id} column={column} />)}
+        {columns?.map(column => <Column key={column?._id} column={column} createNewCard={createNewCard} />)}
 
         {/* Add new column */}
         {!openNewColumnForm

@@ -24,7 +24,7 @@ import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
 
-const Column = ({ column }) => {
+const Column = ({ column, createNewCard }) => {
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column?._id,
@@ -58,14 +58,22 @@ const Column = ({ column }) => {
 
   const [newCardTitle, setNewCardTitle] = useState('')
 
-  const addNewCard = () => {
+  const addNewCard = async () => {
     if (!newCardTitle) {
       toast.error('Please enter card title')
       return
     }
-    // console.log('newCardTitle', newCardTitle)
+    //Tạo dữ liệu để gọi api
     //gọi api ở đây
-
+    const newCardData = {
+      title: newCardTitle,
+      columnId: column?._id
+    }
+    // Gọi lên prop func createNewColumn nằm ở component cha cao nhất (Board.jsx, _id.jsx)
+    //có thể dùng redux để lưu trữ các cột vào state global
+    //Thì lúc naỳ chúng ta có thể gọi luôn API ở đây là xong thay vì phải lần lượt gọi ngược lên những component cha phía trên
+    //Với việc sử dụng redux thì code sẽ clean hơn chuẩn chỉnh hơn rất là nhiều
+    await createNewCard(newCardData)
     toggleNewCardForm()
     setNewCardTitle('')
   }
