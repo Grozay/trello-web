@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import ListColumns from './ListColumns/ListColumns'
-import { mapOrder } from '~/utils/sorts'
 import { DndContext, useSensor, useSensors, DragOverlay, defaultDropAnimationSideEffects, closestCorners, pointerWithin, getFirstCollision } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { useState, useEffect, useCallback, useRef } from 'react'
@@ -16,7 +15,14 @@ const ACCTIVE_DRAG_ITEM_TYPE = {
   CARD: 'ACCTIVE_DRAG_ITEM_TYPE_CARD'
 }
 
-const BoardContent = ({ board, createNewColumn, createNewCard, moveColumns }) => {
+const BoardContent = ({
+  board,
+  createNewColumn,
+  createNewCard,
+  moveColumns,
+  moveCardInTheSameColumn,
+  moveCardToDifferentColumn
+}) => {
   //Nếu dùng PointerSensor mặc định thì phải kết hợp thuộc tính css touch-action: none ở phần tử kéo thả
   //- nhưng còn bug
   // const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
@@ -45,7 +51,7 @@ const BoardContent = ({ board, createNewColumn, createNewCard, moveColumns }) =>
 
 
   useEffect(() => {
-    setOrderedColumns(mapOrder(board?.columns, board?.columnOrderIds, '_id'))
+    setOrderedColumns(board.columns)
   }, [board])
 
   //tìm column theo cardId
@@ -62,7 +68,8 @@ const BoardContent = ({ board, createNewColumn, createNewCard, moveColumns }) =>
     activeDragingCardData,
     overCardId,
     active,
-    over
+    over,
+    triggerFrom
   ) => {
     setOrderedColumns(prevColumn => {
       //tìm vị trí của card đang kéo trong column đích (nơi đang được kéo tới)
@@ -123,6 +130,9 @@ const BoardContent = ({ board, createNewColumn, createNewCard, moveColumns }) =>
         //cập nhạp lại cardOrderIds mới
         nextOverColumn.cardOrderIds = nextOverColumn.cards.map(card => card._id)
       }
+      if (triggerFrom === 'handleDragEnd') {
+        moveCardToDifferentColumn(activeDraggingCardId, oldColumnWhenDraggingCard._id, nextOverColumn._id, nextColumns)
+      }
       return nextColumns
     })
   }
@@ -169,7 +179,8 @@ const BoardContent = ({ board, createNewColumn, createNewCard, moveColumns }) =>
         activeDragingCardData,
         overCardId,
         active,
-        over
+        over,
+        'handleDragOver'
       )
     }
 
@@ -210,7 +221,8 @@ const BoardContent = ({ board, createNewColumn, createNewCard, moveColumns }) =>
           activeDragingCardData,
           overCardId,
           active,
-          over
+          over,
+          'handleDragEnd'
         )
       } else {
         //kéo thả card trong cùng column
@@ -222,6 +234,7 @@ const BoardContent = ({ board, createNewColumn, createNewCard, moveColumns }) =>
 
         //dùng arraymove vì kéo card nó tương tự như logic trong kéo column trong một cái boardcontent
         const dndOrderedCards = arrayMove(oldColumnWhenDraggingCard?.cards, oldCardIndex, newCardIndex)
+        const dndOrderedCardIds = dndOrderedCards.map(card => card._id)
 
         setOrderedColumns(prevColumn => {
           const nextColumn = cloneDeep(prevColumn)
@@ -230,11 +243,11 @@ const BoardContent = ({ board, createNewColumn, createNewCard, moveColumns }) =>
           const targetColumn = nextColumn.find(column => column._id === overColumn._id)
           //cập nhập 2 giá trị mới là card và cardOrderIds trong cái targetColumn
           targetColumn.cards = dndOrderedCards
-          targetColumn.cardOrderIds = dndOrderedCards.map(card => card._id)
-
-
+          targetColumn.cardOrderIds = dndOrderedCardIds
           return nextColumn
         })
+       
+        moveCardInTheSameColumn(dndOrderedCards, dndOrderedCardIds, oldColumnWhenDraggingCard?._id)
       }
     }
 
@@ -250,13 +263,15 @@ const BoardContent = ({ board, createNewColumn, createNewCard, moveColumns }) =>
         //dùng arrayMove của thằng dnd-kit để sắp xếp lại columns ban đầu
         //code của arrayMove ở đây https://github.com/clauderic/dnd-kit/blob/master/packages/sortable/src/utilities/arrayMove.ts
         const dndOrderedColumns = arrayMove(orderedColumns, oldColumnIndex, newColumnIndex)
+
+        //vẫn cập nhập lại cho UI khi API đang được trả về hiện thị lên UI khi API đang chạy
+        setOrderedColumns(dndOrderedColumns)
+
         //gọi API update lại cột
         //tùy trường hợp có thể dùng redux để lưu lại cái dữ liệu này cho code clean hơn
         //moveColumns là func nằm ở trang Boards/_id.jsx gọi api truyền prop xuống đây
         moveColumns(dndOrderedColumns)
 
-        //vẫn cập nhập lại cho UI khi API đang được trả về hiện thị lên UI khi API đang chạy
-        setOrderedColumns(dndOrderedColumns)
       }
     }
 
@@ -333,7 +348,7 @@ const BoardContent = ({ board, createNewColumn, createNewCard, moveColumns }) =>
         height: (theme) => theme.trello.boardContentHeight,
         p: '10px 0'
       }}>
-        <ListColumns columns={orderedColumns} createNewColumn={createNewColumn} createNewCard={createNewCard} />
+        <ListColumns columns={orderedColumns} createNewColumn={createNewColumn} createNewCard={createNewCard}/>
         <DragOverlay dropAnimation={customDropAnimation}>
           {(!activeDragItemType) && null}
           {(activeDragItemType === ACCTIVE_DRAG_ITEM_TYPE.COLUMN) && <Column column={activeDragItemData} />}
