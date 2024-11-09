@@ -17,7 +17,6 @@ import AddCardIcon from '@mui/icons-material/AddCard'
 import Button from '@mui/material/Button'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import ListCards from './ListCards/ListCards'
-import { mapOrder } from '~/utils/sorts'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import TextField from '@mui/material/TextField'
@@ -49,7 +48,7 @@ const Column = ({ column, createNewCard }) => {
   const handleClick = (event) => setAnchorEl(event.currentTarget)
   const handleClose = () => setAnchorEl(null)
 
-  const orderedCards = mapOrder(column?.cards, column?.cardOrderIds, '_id')
+  const orderedCards = column.cards
 
   //phải bọc div ở đây vì vấn đề chiều cao của column khi kéo thả sẽ có bug kiểu kiểu flickering
 
@@ -73,7 +72,7 @@ const Column = ({ column, createNewCard }) => {
     //có thể dùng redux để lưu trữ các cột vào state global
     //Thì lúc naỳ chúng ta có thể gọi luôn API ở đây là xong thay vì phải lần lượt gọi ngược lên những component cha phía trên
     //Với việc sử dụng redux thì code sẽ clean hơn chuẩn chỉnh hơn rất là nhiều
-    await createNewCard(newCardData)
+    createNewCard(newCardData)
     toggleNewCardForm()
     setNewCardTitle('')
   }

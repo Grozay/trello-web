@@ -3,8 +3,19 @@ import Container from '@mui/material/Container'
 import AppBar from '~/components/AppBar/AppBar'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
+import { mapOrder } from '~/utils/sorts'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
 // import { mockData } from '~/apis/mock-data'
-import { fetchBoardDetailsAPI, createNewColumnAPI, createNewCardAPI, updateBoardDetailsAPI } from '~/apis'
+import {
+  fetchBoardDetailsAPI,
+  createNewColumnAPI,
+  createNewCardAPI,
+  updateBoardDetailsAPI,
+  updateColumnDetailsAPI,
+  moveCardToDifferentColumnAPI
+} from '~/apis'
 import { generatePlaceholderCard } from '~/utils/formatter'
 import { isEmpty } from 'lodash'
 
@@ -15,10 +26,13 @@ const Board = () => {
   useEffect(() => {
     const boardId = '67259df8a47e42ae181c4c16'
     fetchBoardDetailsAPI(boardId).then(board => {
+      board.columns = mapOrder(board.columns, board.columnOrderIds, '_id')
       board.columns.forEach(column => {
         if (isEmpty(column.cards)) {
           column.cards = [generatePlaceholderCard(column)]
           column.cardOrderIds = [generatePlaceholderCard(column)._id]
+        } else {
+          column.cards = mapOrder(column.cards, column.cardOrderIds, '_id')
         }
       })
       setBoard(board)
@@ -59,7 +73,7 @@ const Board = () => {
   }
 
   //func này có nhiệm vụ gọi API và xử lí kéo thả column hoàn chỉnh
-  const moveColumns = async (dndOrderedColumns) => {
+  const moveColumns = (dndOrderedColumns) => {
     //cập nhập chuẩn dữ liệu state board
     const dndColumnOrderIds = dndOrderedColumns.map(c => c._id)
     const newBoard = { ...board }
@@ -68,7 +82,53 @@ const Board = () => {
     setBoard(newBoard)
 
     //gọi API update lại cột
-    await updateBoardDetailsAPI(newBoard._id, { columnOrderIds: dndColumnOrderIds })
+    updateBoardDetailsAPI(newBoard._id, { columnOrderIds: dndColumnOrderIds })
+  }
+
+  const moveCardInTheSameColumn = (dndOrderedCards, dndOrderedCardIds, columnId) => {
+    const newBoard = { ...board }
+    const columnToUpdate = newBoard.columns.find(column => column._id === columnId)
+
+    if (columnToUpdate) {
+      columnToUpdate.cards = dndOrderedCards
+      columnToUpdate.cardOrderIds = dndOrderedCardIds
+    }
+    setBoard(newBoard)
+
+    updateColumnDetailsAPI(columnId, { cardOrderIds: dndOrderedCardIds })
+  }
+
+  const moveCardToDifferentColumn = (currentCardId, prevColumnId, nextColumnId, dndOrderedColumns) => {
+    const dndColumnOrderIds = dndOrderedColumns.map(c => c._id)
+    const newBoard = { ...board }
+    newBoard.columns = dndOrderedColumns
+    newBoard.columnOrderIds = dndColumnOrderIds
+    setBoard(newBoard)
+
+    //gọi API update lại cái card
+    moveCardToDifferentColumnAPI({
+      currentCardId,
+      prevColumnId,
+      prevCardOrderIds: dndOrderedColumns.find(column => column._id === prevColumnId)?.cardOrderIds,
+      nextColumnId,
+      nextCardOrderIds: dndOrderedColumns.find(column => column._id === nextColumnId)?.cardOrderIds
+    })
+  }
+
+  if (!board) {
+    return (
+      <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        width: '100vw',
+        gap: 2
+      }}>
+        <CircularProgress />
+        <Typography>Loading board...</Typography>
+      </Box>
+    )
   }
 
   return (
@@ -80,6 +140,8 @@ const Board = () => {
         createNewColumn={createNewColumn}
         createNewCard={createNewCard}
         moveColumns={moveColumns}
+        moveCardInTheSameColumn={moveCardInTheSameColumn}
+        moveCardToDifferentColumn={moveCardToDifferentColumn}
         // moveCard={moveCard}
       />
       {/* <BoardBar board={mockData?.board} /> */}
