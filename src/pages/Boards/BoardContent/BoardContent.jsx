@@ -21,7 +21,8 @@ const BoardContent = ({
   createNewCard,
   moveColumns,
   moveCardInTheSameColumn,
-  moveCardToDifferentColumn
+  moveCardToDifferentColumn,
+  deleteColumnDetails
 }) => {
   //Nếu dùng PointerSensor mặc định thì phải kết hợp thuộc tính css touch-action: none ở phần tử kéo thả
   //- nhưng còn bug
@@ -246,7 +247,6 @@ const BoardContent = ({
           targetColumn.cardOrderIds = dndOrderedCardIds
           return nextColumn
         })
-       
         moveCardInTheSameColumn(dndOrderedCards, dndOrderedCardIds, oldColumnWhenDraggingCard?._id)
       }
     }
@@ -348,7 +348,7 @@ const BoardContent = ({
         height: (theme) => theme.trello.boardContentHeight,
         p: '10px 0'
       }}>
-        <ListColumns columns={orderedColumns} createNewColumn={createNewColumn} createNewCard={createNewCard}/>
+        <ListColumns columns={orderedColumns} createNewColumn={createNewColumn} createNewCard={createNewCard} deleteColumnDetails={deleteColumnDetails} />
         <DragOverlay dropAnimation={customDropAnimation}>
           {(!activeDragItemType) && null}
           {(activeDragItemType === ACCTIVE_DRAG_ITEM_TYPE.COLUMN) && <Column column={activeDragItemData} />}
