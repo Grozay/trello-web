@@ -7,8 +7,15 @@ import { SortableContext, horizontalListSortingStrategy } from '@dnd-kit/sortabl
 import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
+import { createNewColumnAPI } from '~/apis'
+import { generatePlaceholderCard } from '~/utils/formatter'
+import { cloneDeep } from 'lodash'
+import { useDispatch, useSelector } from 'react-redux'
+import { updateCurrentActiveBoard, selectCurrentActiveBoard } from '~/redux/acticeBoard/activeBoardSlice'
 
-const ListColumns = ({ columns, createNewColumn, createNewCard, deleteColumnDetails }) => {
+const ListColumns = ({ columns }) => {
+  const dispatch = useDispatch()
+  const board = useSelector(selectCurrentActiveBoard)
 
   const [openNewColumnForm, setOpenNewColumnForm] = useState(false)
   const toggleNewColumnForm = () => setOpenNewColumnForm(!openNewColumnForm)
@@ -26,11 +33,34 @@ const ListColumns = ({ columns, createNewColumn, createNewCard, deleteColumnDeta
       title: newColumnTitle
     }
 
+    //Gọi API tạo mới column và làm lại dữ liệu State board
+    const createdColumn = await createNewColumnAPI({
+      ...newColumnData,
+      boardId: board._id
+    })
+
+    createdColumn.cards = [generatePlaceholderCard(createdColumn)]
+    createdColumn.cardOrderIds = [generatePlaceholderCard(createdColumn)._id]
+
+    //cập nhật lại state board
+
+    //Đoạn này sẽ dính lỗi object is not extensible bởi dù đã copy/clone ra gía trị new board nhưng bản chất của spread operator là shallow copy/clone , nên dính phải rules immutability trong redux toolkit không dùng được hàm push (sửa giá trị mảng trực tiếp), cách đơn giản và nhanh gọn nhất ở trường hợp này là dùng deep copy/clone toàn bộ cái board cho dễ  hiểu và ngắn gọn.
+    const newBoard = cloneDeep(board)
+    newBoard.columns.push(createdColumn)
+    newBoard.columnOrderIds.push(createdColumn._id)
+
+    //Ngoài ra có cách dùng array.concat() nó gép 2 mảng lại với nhau nên không bị lỗi object is not extensible 
+    // const newBoard = { ...board }
+    // newBoard.columns = newBoard.columns.concat(createdColumn)
+    // newBoard.columnOrderIds = newBoard.columnOrderIds.concat(createdColumn._id)
+
+    dispatch(updateCurrentActiveBoard(newBoard))
+
     // Gọi lên prop func createNewColumn nằm ở component cha cao nhất (Board.jsx, _id.jsx)
     //có thể dùng redux để lưu trữ các cột vào state global
     //Thì lúc naỳ chúng ta có thể gọi luôn API ở đây là xong thay vì phải lần lượt gọi ngược lên những component cha phía trên 
     //Với việc sử dụng redux thì code sẽ clean hơn chuẩn chỉnh hơn rất là nhiều
-    await createNewColumn(newColumnData)
+    // await createNewColumn(newColumnData)
 
     toggleNewColumnForm()
     setNewColumnTitle('')
@@ -51,7 +81,7 @@ const ListColumns = ({ columns, createNewColumn, createNewCard, deleteColumnDeta
         '&::-webkit-scrollbar-track': { m: 2 }
       }}>
         {/* Box column */}
-        {columns?.map(column => <Column key={column?._id} column={column} createNewCard={createNewCard} deleteColumnDetails={deleteColumnDetails} />)}
+        {columns?.map(column => <Column key={column?._id} column={column} />)}
 
         {/* Add new column */}
         {!openNewColumnForm

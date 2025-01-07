@@ -23,9 +23,15 @@ import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
+import { createNewCardAPI } from '~/apis'
+import { cloneDeep } from 'lodash'
+import { useDispatch, useSelector } from 'react-redux'
+import { updateCurrentActiveBoard, selectCurrentActiveBoard } from '~/redux/acticeBoard/activeBoardSlice'
+import { deleteColumnDetailsAPI } from '~/apis'
 
-
-const Column = ({ column, createNewCard, deleteColumnDetails }) => {
+const Column = ({ column }) => {
+  const dispatch = useDispatch()
+  const board = useSelector(selectCurrentActiveBoard)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column?._id,
@@ -70,11 +76,34 @@ const Column = ({ column, createNewCard, deleteColumnDetails }) => {
       title: newCardTitle,
       columnId: column?._id
     }
+
+    const createdCard = await createNewCardAPI({
+      ...newCardData,
+      boardId: board._id
+    })
+
+    const newBoard = cloneDeep(board)
+    const columnToUpdate = newBoard.columns.find(column => {
+      return column._id === newCardData.columnId
+    })
+
+    if (columnToUpdate) {
+
+      if (columnToUpdate.cards.some(card => card.FE_PlaceholderCard)) {
+        columnToUpdate.cards = [createdCard]
+        columnToUpdate.cardOrderIds = [createdCard._id]
+      } else {
+        columnToUpdate.cards.push(createdCard)
+        columnToUpdate.cardOrderIds.push(createdCard._id)
+      }
+    }
+    // setBoard(newBoard)
+    dispatch(updateCurrentActiveBoard(newBoard))
+
     // Gọi lên prop func createNewColumn nằm ở component cha cao nhất (Board.jsx, _id.jsx)
     //có thể dùng redux để lưu trữ các cột vào state global
     //Thì lúc naỳ chúng ta có thể gọi luôn API ở đây là xong thay vì phải lần lượt gọi ngược lên những component cha phía trên
     //Với việc sử dụng redux thì code sẽ clean hơn chuẩn chỉnh hơn rất là nhiều
-    createNewCard(newCardData)
     toggleNewCardForm()
     setNewCardTitle('')
   }
@@ -90,7 +119,14 @@ const Column = ({ column, createNewCard, deleteColumnDetails }) => {
       cancellationText: 'Cancel',
       buttonOrder: ['confirm', 'cancel']
     }).then(() => {
-      deleteColumnDetails(column?._id)
+      const newBoard = { ...board }
+      newBoard.columns = newBoard.columns.filter(column => column._id !== column?._id)
+      newBoard.columnOrderIds = newBoard.columnOrderIds.filter(_id => _id !== column?._id)
+      // setBoard(newBoard)
+      dispatch(updateCurrentActiveBoard(newBoard))
+      deleteColumnDetailsAPI(column?._id).then((res) => {
+        toast.success(res?.deleteResult)
+      })
     }).catch(() => {
     })
   }
