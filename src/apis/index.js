@@ -5,11 +5,11 @@ import { API_ROOT } from '~/utils/constants'
 //lý do vì phía FE ko cần thiết phải làm như vậy vì catch nhièu quá nó bị thừa khi catch quá nhiều
 //chúng ta có giải pháp clean code hơn là dùng interceptor để bắt lỗi tập trung nằm giữa  request và response để xử lí logic mà chúng ta muốn
 
-export const fetchBoardDetailsAPI = async (boardId) => {
-  const response = await axios.get(`${API_ROOT}/v1/boards/${boardId}`)
-  // axios trả về là 1 object có 2 thuộc tính: data và status
-  return response.data
-}
+// export const fetchBoardDetailsAPI = async (boardId) => {
+//   const response = await axios.get(`${API_ROOT}/v1/boards/${boardId}`)
+//   // axios trả về là 1 object có 2 thuộc tính: data và status
+//   return response.data
+// }
 
 export const updateBoardDetailsAPI = async (boardId, updateData) => {
   const response = await axios.put(`${API_ROOT}/v1/boards/${boardId}`, updateData)
