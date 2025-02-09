@@ -14,28 +14,22 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 
 import {
-  createNewColumnAPI,
-  createNewCardAPI,
   updateBoardDetailsAPI,
   updateColumnDetailsAPI,
-  moveCardToDifferentColumnAPI,
-  deleteColumnDetailsAPI
+  moveCardToDifferentColumnAPI
 } from '~/apis'
-import { generatePlaceholderCard } from '~/utils/formatter'
 import { cloneDeep } from 'lodash'
-import { toast } from 'react-toastify'
+import { useParams } from 'react-router-dom'
 
 const Board = () => {
   const dispatch = useDispatch()
+  const { boardId } = useParams()
   // const [board, setBoard] = useState(null)
   const board = useSelector(selectCurrentActiveBoard)
 
   useEffect(() => {
-    const boardId = '67259df8a47e42ae181c4c16'
-
     dispatch(fetchBoardDetailsAPI(boardId))
-
-  }, [dispatch])
+  }, [dispatch, boardId])
 
   // const createNewColumn = async (newColumnData) => {
   // }
@@ -46,7 +40,7 @@ const Board = () => {
     //cập nhập chuẩn dữ liệu state board
     const dndColumnOrderIds = dndOrderedColumns.map(c => c._id)
 
-    //Đoạn này sẽ không dính lỗi vì nó giống như concat() ở trên, nó gép 2 mảng lại với nhau nên không bị lỗi object is not extensible 
+    //Đoạn này sẽ không dính lỗi vì nó giống như concat() ở trên, nó gép 2 mảng lại với nhau nên không bị lỗi object is not extensible
     const newBoard = { ...board }
     newBoard.columns = dndOrderedColumns
     newBoard.columnOrderIds = dndColumnOrderIds
