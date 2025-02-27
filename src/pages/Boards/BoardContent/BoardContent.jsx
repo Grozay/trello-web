@@ -91,7 +91,6 @@ const BoardContent = ({
       // console.log('nextActiveColumn', nextActiveColumn)
       // console.log('nextOverColumn', nextOverColumn)
 
-
       //Column cũ
       if (nextActiveColumn) {
         //xóa cái card ở column active (có thể nói là column cũ , cái lúc mà kéo card ra khỏi để sang column khác)

@@ -11,6 +11,9 @@ import CardActions from '@mui/material/CardActions'
 import TextField from '@mui/material/TextField'
 import Zoom from '@mui/material/Zoom'
 import { useForm } from 'react-hook-form'
+import { registerUserAPI } from '~/apis'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import {
   EMAIL_RULE_MESSAGE,
   PASSWORD_RULE_MESSAGE,
@@ -21,10 +24,18 @@ import {
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
 
 function RegisterForm() {
+  const navigate = useNavigate()
   const { register, handleSubmit, formState: { errors }, watch } = useForm()
 
   const submitRegister = (data) => {
-    console.log('🚀 ~ submitRegister ~ data:', data)
+    const { email, password } = data
+    toast.promise(
+      registerUserAPI({ email, password }), {
+        pending: 'Registering...'
+      }
+    ).then(user => {
+      navigate(`/login?registeredEmail=${user.email}`)
+    })
   }
 
   return (
