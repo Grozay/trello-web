@@ -287,7 +287,7 @@ const Column = ({ column }) => {
                 }}
               />
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Button variant='contained' color='success' size='small'
+                <Button className='interceptor-loading' variant='contained' color='success' size='small'
                   onClick={addNewCard}
                   sx={{
                     boxShadow: 'none',

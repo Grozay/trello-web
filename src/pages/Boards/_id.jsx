@@ -3,9 +3,6 @@ import Container from '@mui/material/Container'
 import AppBar from '~/components/AppBar/AppBar'
 import BoardBar from './BoardBar/BoardBar'
 import BoardContent from './BoardContent/BoardContent'
-import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
-import Typography from '@mui/material/Typography'
 import {
   fetchBoardDetailsAPI,
   updateCurrentActiveBoard,
@@ -20,6 +17,7 @@ import {
 } from '~/apis'
 import { cloneDeep } from 'lodash'
 import { useParams } from 'react-router-dom'
+import PageLoadingSpinner from '~/components/Loading/PageLoadingSpinner'
 
 const Board = () => {
   const dispatch = useDispatch()
@@ -91,19 +89,7 @@ const Board = () => {
   }
 
   if (!board) {
-    return (
-      <Box sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        width: '100vw',
-        gap: 2
-      }}>
-        <CircularProgress />
-        <Typography>Loading board...</Typography>
-      </Box>
-    )
+    return <PageLoadingSpinner caption='Loading Board...' />
   }
 
   return (
