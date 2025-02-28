@@ -1,5 +1,5 @@
 // TrungQuanDev: https://youtube.com/@trungquandev
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
@@ -22,8 +22,12 @@ import {
   PASSWORD_RULE
 } from '~/utils/validators'
 import FieldErrorAlert from '~/components/Form/FieldErrorAlert'
+import { useDispatch } from 'react-redux'
+import { loginUserApi } from '~/redux/user/userSlice.js'
 
 function LoginForm() {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const { register, handleSubmit, formState: { errors } } = useForm()
   let [searchParams] = useSearchParams()
   const registeredEmail = searchParams.get('registeredEmail')
@@ -31,12 +35,17 @@ function LoginForm() {
 
   const submitLogIn = (data) => {
     const { email, password } = data
-    if (registeredEmail) {
-      toast.success(`Welcome back ${registeredEmail}!`)
-    }
-    if (verifiedEmail) {
-      toast.success(`Welcome back ${verifiedEmail}!`)
-    }
+    toast.promise(
+      dispatch(loginUserApi({ email, password })), {
+        pending: 'Logging in...'
+      }
+    ).then(res => {
+      // console.log(res)
+      //Đoạn này phải kiểm tra không có lỗi mới redirect về route /
+      if (!res.error) {
+        navigate('/')
+      }
+    })
   }
 
   return (
@@ -56,17 +65,17 @@ function LoginForm() {
             Author: TrungQuanDev
           </Box>
           <Box sx={{ marginTop: '1em', display: 'flex', justifyContent: 'center', flexDirection: 'column', padding: '0 1em' }}>
-            {verifiedEmail && (
+            {registeredEmail && (
               <Alert severity="success" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
                 Your email&nbsp;
-                <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>{verifiedEmail}</Typography>
+                <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>{registeredEmail}</Typography>
                 &nbsp;has been verified.<br />Now you can login to enjoy our services! Have a good day!
               </Alert>
             )}
-            {registeredEmail && (
+            {verifiedEmail && (
               <Alert severity="info" sx={{ '.MuiAlert-message': { overflow: 'hidden' } }}>
                 An email has been sent to&nbsp;
-                <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>{registeredEmail}</Typography>
+                <Typography variant="span" sx={{ fontWeight: 'bold', '&:hover': { color: '#fdba26' } }}>{verifiedEmail}</Typography>
                 <br />Please check and verify your account before logging in!
               </Alert>
             )}

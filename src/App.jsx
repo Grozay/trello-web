@@ -1,9 +1,23 @@
 import Board from '~/pages/Boards/_id'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import NotFound from '~/pages/404/NotFound'
 import Auth from '~/pages/Auth/Auth'
 import AccountVerification from '~/pages/Auth/AccountVerification'
+import { useSelector } from 'react-redux'
+import { selectCurrentUser } from '~/redux/user/userSlice'
+
+
+//giải pháp clean Code trong việc xác định các route nào cần đăng nhập tài khoản xong thì mới cho truy cập sử dụng outlet để hiển thị các child route
+const ProtectedRoute = ({ user }) => {
+  if (!user) {
+    return <Navigate to='/login' replace={true} />
+  }
+  return <Outlet />
+}
+
 function App() {
+  const currentUser = useSelector(selectCurrentUser)
+
   return (
     <Routes>
       <Route path='/' element={
@@ -11,8 +25,13 @@ function App() {
         //Thực hành dễ hiểu hơn bằng cách nhấn go home từ trang 404 xong quay lại bằng nút back trình duyệt giữa 2 trường hợp có replace hoặc ko có
         <Navigate to='/boards/67259df8a47e42ae181c4c16' replace={true} />
       } />
-      {/* Board detail */}
-      <Route path='/boards/:boardId' element={<Board />} />
+
+      {/* Protected route (Hiểu đơn giản trong dự án của ta là nhưngx route chi  cho truy cập sau khi đã login) */}
+      <Route element={<ProtectedRoute user={currentUser} />}>
+        {/* Outlet sẽ chạy vào child của route trong này*/}
+        {/* Board detail */}
+        <Route path='/boards/:boardId' element={<Board />} />
+      </Route>
 
       {/* Authentication */}
       <Route path='/login' element={<Auth />} />
