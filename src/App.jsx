@@ -24,7 +24,7 @@ function App() {
       <Route path='/' element={
         // Ở đây cần replace gía trị true để nó thay thế route / , có thể hiểu là route / sẽ không nằm trong history của browser
         //Thực hành dễ hiểu hơn bằng cách nhấn go home từ trang 404 xong quay lại bằng nút back trình duyệt giữa 2 trường hợp có replace hoặc ko có
-        <Navigate to='/boards/67259df8a47e42ae181c4c16' replace={true} />
+        <Navigate to='/boards' replace={true} />
       } />
 
       {/* Protected route (Hiểu đơn giản trong dự án của ta là nhưngx route chi  cho truy cập sau khi đã login) */}
