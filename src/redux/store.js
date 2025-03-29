@@ -12,6 +12,7 @@ const rootPersistConfig = {
   key: 'root', //key của cái persist do chúng ta chỉ định, chứ để mặc định là root
   storage: storage, //biến storage ở trên - lưu vào localstorage
   whitelist: ['user'] //định nghĩa các slice dữ liệu được phép duy trì qua mỗi lần f5 trình duyệt
+
   // blacklist: ['user'] //định nghĩa các slice dữ liệu không được phép duy trì qua mỗi lần f5 trình duyệt
 }
 

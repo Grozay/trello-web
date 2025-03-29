@@ -14,7 +14,7 @@ import HomeIcon from '@mui/icons-material/Home'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import CardMedia from '@mui/material/CardMedia'
+// import CardMedia from '@mui/material/CardMedia'
 import Pagination from '@mui/material/Pagination'
 import PaginationItem from '@mui/material/PaginationItem'
 import { Link, useLocation } from 'react-router-dom'
@@ -22,7 +22,8 @@ import randomColor from 'randomcolor'
 import SidebarCreateBoardModal from './create'
 import { fetchBoardsAPI } from '~/apis'
 import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE } from '~/utils/constants'
-import { styled } from '@mui/material/styles'
+import { responsiveFontSizes, styled } from '@mui/material/styles'
+
 // Styles của mấy cái Sidebar item menu, anh gom lại ra đây cho gọn.
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -60,6 +61,11 @@ function Boards() {
    */
   const page = parseInt(query.get('page') || '1', 10)
 
+  const updateStateData = (res) => {
+    setBoards(res.boards || [])
+    setTotalBoards(res.totalBoards || 0)
+  }
+
   useEffect(() => {
     // Fake tạm 16 cái item thay cho boards
     // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
@@ -71,13 +77,14 @@ function Boards() {
     //Mỗi khi cái url thay dổi ví dị như chúng ta chuyển trang, thì cái locaiton.search lấy từ hook useLocation của react-router-dom cũng thay đỏi theo, đồng nghĩa hàm useEffect sẽ chạy lại và fetch lại API thoe đúng page mới vì cái location.sẻarch nằm trong dependencies của useEffect
 
     // Gọi API lấy danh sách boards ở đây...
-    fetchBoardsAPI(location.search).then(res => {
-      setBoards(res.boards || [])
-      setTotalBoards(res.totalBoards || 0)
-    })
+    fetchBoardsAPI(location.search).then(updateStateData)
     // ...
   }, [location.search])
 
+
+  const afterCreateNewBoard = () => {
+    fetchBoardsAPI(location.search).then(updateStateData)
+  }
   // Lúc chưa tồn tại boards > đang chờ gọi api thì hiện loading
   if (!boards) {
     return <PageLoadingSpinner caption="Loading Boards..." />
@@ -105,7 +112,7 @@ function Boards() {
             </Stack>
             <Divider sx={{ my: 1 }} />
             <Stack direction="column" spacing={1}>
-              <SidebarCreateBoardModal />
+              <SidebarCreateBoardModal afterCreateNewBoard={afterCreateNewBoard}/>
             </Stack>
           </Grid>
 

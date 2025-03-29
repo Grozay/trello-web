@@ -52,7 +52,6 @@ export const activeBoardSlice = createSlice({
           column.cards = mapOrder(column.cards, column.cardOrderIds, '_id')
         }
       })
-
       //update lại dữ liệu của currentActiveBoard
       state.currentActiveBoard = board
     })
