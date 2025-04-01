@@ -119,7 +119,7 @@ const Column = ({ column }) => {
       buttonOrder: ['confirm', 'cancel']
     }).then(() => {
       const newBoard = { ...board }
-      newBoard.columns = newBoard.columns.filter(column => column._id !== column?._id)
+      newBoard.columns = newBoard.columns.filter(c => c._id !== column?._id)
       newBoard.columnOrderIds = newBoard.columnOrderIds.filter(_id => _id !== column?._id)
       // setBoard(newBoard)
       dispatch(updateCurrentActiveBoard(newBoard))
