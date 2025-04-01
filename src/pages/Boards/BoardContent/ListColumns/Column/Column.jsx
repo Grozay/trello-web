@@ -1,5 +1,4 @@
 import { Box } from '@mui/material'
-import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -23,11 +22,11 @@ import TextField from '@mui/material/TextField'
 import CloseIcon from '@mui/icons-material/Close'
 import { toast } from 'react-toastify'
 import { useConfirm } from 'material-ui-confirm'
-import { createNewCardAPI } from '~/apis'
+import { createNewCardAPI, deleteColumnDetailsAPI, updateColumnDetailsAPI } from '~/apis'
 import { cloneDeep } from 'lodash'
 import { useDispatch, useSelector } from 'react-redux'
 import { updateCurrentActiveBoard, selectCurrentActiveBoard } from '~/redux/acticeBoard/activeBoardSlice'
-import { deleteColumnDetailsAPI } from '~/apis'
+import ToggleFocusInput from '~/components/Form/ToggleFocusInput'
 
 const Column = ({ column }) => {
   const dispatch = useDispatch()
@@ -120,7 +119,7 @@ const Column = ({ column }) => {
       buttonOrder: ['confirm', 'cancel']
     }).then(() => {
       const newBoard = { ...board }
-      newBoard.columns = newBoard.columns.filter(column => column._id !== column?._id)
+      newBoard.columns = newBoard.columns.filter(c => c._id !== column?._id)
       newBoard.columnOrderIds = newBoard.columnOrderIds.filter(_id => _id !== column?._id)
       // setBoard(newBoard)
       dispatch(updateCurrentActiveBoard(newBoard))
@@ -128,6 +127,18 @@ const Column = ({ column }) => {
         toast.success(res?.deleteResult)
       })
     }).catch(() => {
+    })
+  }
+
+  const onChangedColumnTitle = (newTitle) => {
+    //call API update column and process board in redux
+    updateColumnDetailsAPI(column?._id, { title: newTitle }).then(() => {
+      const newBoard = cloneDeep(board)
+      const columnToUpdate = newBoard.columns.find(c => c._id === column._id)
+
+      if (columnToUpdate) columnToUpdate.title = newTitle
+      // setBoard(newBoard)
+      dispatch(updateCurrentActiveBoard(newBoard))
     })
   }
 
@@ -156,12 +167,11 @@ const Column = ({ column }) => {
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          <Typography variant="h6" sx={{
-            fontSize: '1rem',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}
-          >{column?.title}</Typography>
+          <ToggleFocusInput
+            value={column?.title}
+            onChangedValue={onChangedColumnTitle}
+            data-no-dnd='true'
+          />
           <Box>
             <Tooltip title="More options">
               <ExpandMoreIcon
