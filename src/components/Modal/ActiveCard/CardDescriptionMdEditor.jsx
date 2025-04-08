@@ -21,7 +21,7 @@ const markdownValueExample = `
  * Vài ví dụ Markdown từ lib
  * https://codesandbox.io/embed/markdown-editor-for-react-izdd6?fontsize=14&hidenavigation=1&theme=dark
  */
-function CardDescriptionMdEditor() {
+function CardDescriptionMdEditor({ cardDescriptionProp, handleUpdateCardDescription }) {
   // Lấy giá trị 'dark', 'light' hoặc 'system' mode từ MUI để support phần Markdown bên dưới: data-color-mode={mode}
   // https://www.npmjs.com/package/@uiw/react-md-editor#support-dark-modenight-mode
   const { mode } = useColorScheme()
@@ -29,11 +29,11 @@ function CardDescriptionMdEditor() {
   // State xử lý chế độ Edit và chế độ View
   const [markdownEditMode, setMarkdownEditMode] = useState(false)
   // State xử lý giá trị markdown khi chỉnh sửa
-  const [cardDescription, setCardDescription] = useState(markdownValueExample)
+  const [cardDescription, setCardDescription] = useState(cardDescriptionProp)
 
   const updateCardDescription = () => {
     setMarkdownEditMode(false)
-    console.log('cardDescription: ', cardDescription)
+    handleUpdateCardDescription(cardDescription)
   }
 
   return (

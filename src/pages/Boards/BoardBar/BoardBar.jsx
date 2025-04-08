@@ -95,7 +95,7 @@ const BoardBar = ({ board }) => {
           }}
         >Invite</Button>
 
-        <BoardUserGroup boardUsers={board?.users} />
+        <BoardUserGroup boardUsers={board?.FE_allUsers} />
       </Box>
     </Box>
   )
