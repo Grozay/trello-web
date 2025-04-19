@@ -19,7 +19,7 @@ const BoardContent = ({
   board,
   moveColumns,
   moveCardInTheSameColumn,
-  moveCardToDifferentColumn,
+  moveCardToDifferentColumn
 }) => {
   //Nếu dùng PointerSensor mặc định thì phải kết hợp thuộc tính css touch-action: none ở phần tử kéo thả
   //- nhưng còn bug

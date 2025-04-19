@@ -7,6 +7,7 @@ import AddIcon from '@mui/icons-material/Add'
 import Badge from '@mui/material/Badge'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
+// eslint-disable-next-line no-unused-vars
 function CardUserGroup({ cardMemberIds = [] }) {
   /**
    * Xử lý Popover để ẩn hoặc hiện toàn bộ user trên một cái popup, tương tự docs để tham khảo ở đây:

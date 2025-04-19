@@ -5,11 +5,10 @@ import VpnLockIcon from '@mui/icons-material/VpnLock'
 import AddToDriveIcon from '@mui/icons-material/AddToDrive'
 import BoltIcon from '@mui/icons-material/Bolt'
 import FilterListIcon from '@mui/icons-material/FilterList'
-import Button from '@mui/material/Button'
-import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import Tooltip from '@mui/material/Tooltip'
 import { capitalizeFirstLetter } from '~/utils/formatter'
 import BoardUserGroup from './BoardUserGroup'
+import InviteBoardUser from './InviteBoardUser'
 const MENU_STYLE ={
   color: 'white',
   backgroundColor: 'transparent',
@@ -82,20 +81,10 @@ const BoardBar = ({ board }) => {
         alignItems: 'center',
         gap: 2
       }}>
+        {/* Xử lí Invite user */}
+        <InviteBoardUser boardId={board._id} />
 
-        <Button
-          variant="outlined"
-          startIcon={<PersonAddIcon />}
-          sx={{
-            color: 'white',
-            borderColor: 'white',
-            '&:hover': {
-              borderColor: 'white'
-            }
-          }}
-        >Invite</Button>
-
-        <BoardUserGroup boardUsers={board?.users} />
+        <BoardUserGroup boardUsers={board?.FE_allUsers} />
       </Box>
     </Box>
   )

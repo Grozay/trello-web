@@ -15,7 +15,7 @@ import { persistStore } from 'redux-persist'
 import { injectStore } from '~/utils/authorizeAxios.js'
 const persistor = persistStore(store)
 
-//Kỹ thuật inject Store: là kỹ thuật khi cần sửa dụng biến redux ở các file ngoài phạm vi component 
+//Kỹ thuật inject Store: là kỹ thuật khi cần sửa dụng biến redux ở các file ngoài phạm vi component
 injectStore(store)
 
 ReactDOM.createRoot(document.getElementById('root')).render(

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import Box from '@mui/material/Box'
 import Modal from '@mui/material/Modal'
 import Typography from '@mui/material/Typography'
@@ -33,9 +32,9 @@ import CardUserGroup from './CardUserGroup'
 import CardDescriptionMdEditor from './CardDescriptionMdEditor'
 import CardActivitySection from './CardActivitySection'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectCurrentActiveCard, clearCurrentActiveCard, updateCurrentActiveCard } from '~/redux/activeCard/activeCardSlice'
+import { selectCurrentActiveCard, clearAndHideModalActiveCard, updateCurrentActiveCard, selectIsShowModalActiveCard } from '~/redux/activeCard/activeCardSlice'
 import { updateCardDetailsAPI } from '~/apis'
-
+import { updateCardInBoard } from '~/redux/acticeBoard/activeBoardSlice'
 import { styled } from '@mui/material/styles'
 const SidebarItem = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -63,20 +62,21 @@ const SidebarItem = styled(Box)(({ theme }) => ({
 function ActiveCard() {
   const dispatch = useDispatch()
   const activeCard = useSelector(selectCurrentActiveCard)
+  const isShowModalActiveCard = useSelector(selectIsShowModalActiveCard)
   // const [isOpen, setIsOpen] = useState(true)
   // const handleOpenModal = () => setIsOpen(true)
   const handleCloseModal = () => {
     // setIsOpen(false)
-    dispatch(clearCurrentActiveCard())
+    dispatch(clearAndHideModalActiveCard())
   }
 
   //Function goi api dùng chung cho các trường hợp udpate card title , description, cover, comment, ...vv
-  const callApiUpdateCard = async (updateData) => { 
+  const callApiUpdateCard = async (updateData) => {
     const updatedCard = await updateCardDetailsAPI(activeCard._id, updateData)
     //B1: udpate lại cái card đang active trong modal hiện tại
     dispatch(updateCurrentActiveCard(updatedCard))
     //B2: update lại cái card đang active trong activeBoard (nested data)
-    //dispatch(updateActiveBoard(updatedCard))
+    dispatch(updateCardInBoard(updatedCard))
     return updatedCard
   }
 
@@ -85,8 +85,13 @@ function ActiveCard() {
     // Gọi API...
   }
 
+  const onUpdateCardDescription = (newDescription) => {
+    callApiUpdateCard({ description: newDescription })
+    // Gọi API...
+  }
+
   const onUploadCardCover = (event) => {
-    console.log(event.target?.files[0])
+    // console.log(event.target?.files[0])
     const error = singleFileValidator(event.target?.files[0])
     if (error) {
       toast.error(error)
@@ -96,12 +101,23 @@ function ActiveCard() {
     reqData.append('cardCover', event.target?.files[0])
 
     // Gọi API...
+
+    toast.promise(
+      callApiUpdateCard(reqData)
+    ).finally(() => event.target.value = ''), {
+      pending: 'Updating...'
+    }
+  }
+
+  // Dùng asysn await ở đây để component con CardActivitySection có thể đợi callApiUpdateCard hoàn thành mới clear thẻ input comment
+  const onAddCardComment = async (commentToAdd) => {
+    await callApiUpdateCard({ commentToAdd })
   }
 
   return (
     <Modal
       disableScrollLock
-      open={true}
+      open={isShowModalActiveCard}
       onClose={handleCloseModal} // Sử dụng onClose trong trường hợp muốn đóng Modal bằng nút ESC hoặc click ra ngoài Modal
       sx={{ overflowY: 'auto' }}>
       <Box sx={{
@@ -163,7 +179,7 @@ function ActiveCard() {
               </Box>
 
               {/* Feature 03: Xử lý mô tả của Card */}
-              <CardDescriptionMdEditor />
+              <CardDescriptionMdEditor cardDescriptionProp={activeCard?.description} handleUpdateCardDescription={onUpdateCardDescription}/>
             </Box>
 
             <Box sx={{ mb: 3 }}>
@@ -173,7 +189,10 @@ function ActiveCard() {
               </Box>
 
               {/* Feature 04: Xử lý các hành động, ví dụ comment vào Card */}
-              <CardActivitySection />
+              <CardActivitySection
+                cardComments={activeCard?.comments}
+                onAddCardComment={onAddCardComment}
+              />
             </Box>
           </Grid>
 

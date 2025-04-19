@@ -22,7 +22,7 @@ import randomColor from 'randomcolor'
 import SidebarCreateBoardModal from './create'
 import { fetchBoardsAPI } from '~/apis'
 import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE } from '~/utils/constants'
-import { responsiveFontSizes, styled } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 
 // Styles của mấy cái Sidebar item menu, anh gom lại ra đây cho gọn.
 const SidebarItem = styled(Box)(({ theme }) => ({
