@@ -18,8 +18,8 @@ function ToggleFocusInput({ value, onChangedValue, inputFontSize = '16px', ...pr
       return
     }
 
-    // console.log('value: ', value) 
-    // console.log('inputValue: ', inputValue) 
+    // console.log('value: ', value)
+    // console.log('inputValue: ', inputValue)
     // Khi giá trị có thay đổi ok thì gọi lên func ở Props cha để xử lý
     onChangedValue(inputValue)
   }

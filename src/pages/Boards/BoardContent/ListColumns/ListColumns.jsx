@@ -49,7 +49,7 @@ const ListColumns = ({ columns }) => {
     newBoard.columns.push(createdColumn)
     newBoard.columnOrderIds.push(createdColumn._id)
 
-    //Ngoài ra có cách dùng array.concat() nó gép 2 mảng lại với nhau nên không bị lỗi object is not extensible 
+    //Ngoài ra có cách dùng array.concat() nó gép 2 mảng lại với nhau nên không bị lỗi object is not extensible
     // const newBoard = { ...board }
     // newBoard.columns = newBoard.columns.concat(createdColumn)
     // newBoard.columnOrderIds = newBoard.columnOrderIds.concat(createdColumn._id)
@@ -58,7 +58,7 @@ const ListColumns = ({ columns }) => {
 
     // Gọi lên prop func createNewColumn nằm ở component cha cao nhất (Board.jsx, _id.jsx)
     //có thể dùng redux để lưu trữ các cột vào state global
-    //Thì lúc naỳ chúng ta có thể gọi luôn API ở đây là xong thay vì phải lần lượt gọi ngược lên những component cha phía trên 
+    //Thì lúc naỳ chúng ta có thể gọi luôn API ở đây là xong thay vì phải lần lượt gọi ngược lên những component cha phía trên
     //Với việc sử dụng redux thì code sẽ clean hơn chuẩn chỉnh hơn rất là nhiều
     // await createNewColumn(newColumnData)
 
