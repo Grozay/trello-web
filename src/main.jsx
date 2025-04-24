@@ -16,9 +16,6 @@ import { injectStore } from '~/utils/authorizeAxios.js'
 const persistor = persistStore(store)
 //Kỹ thuật inject Store: là kỹ thuật khi cần sửa dụng biến redux ở các file ngoài phạm vi component
 injectStore(store)
-import { io } from 'socket.io-client'
-import { API_ROOT } from '~/utils/constants'
-export const socketIoInstance = io(API_ROOT)
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>

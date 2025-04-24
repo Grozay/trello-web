@@ -22,7 +22,7 @@ const BOARD_INVITATION_STATUS = {
   ACCEPTED: 'ACCEPTED',
   REJECTED: 'REJECTED'
 }
-import { socketIoInstance } from '~/main'
+import { socketIoInstance } from '~/socketClient'
 
 function Notifications() {
   const [anchorEl, setAnchorEl] = useState(null)
